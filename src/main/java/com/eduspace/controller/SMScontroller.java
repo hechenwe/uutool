@@ -2,17 +2,21 @@ package com.eduspace.controller;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.eduspace.entity.Log;
+import com.eduspace.service.log.LogService;
 import com.eduspace.service.rabbitmq.RabbitMqSend;
 import com.eduspace.service.sms.Code;
 import com.eduspace.util.OauthUtil;
@@ -37,7 +41,8 @@ import com.google.gson.Gson;
 public class SMScontroller {
 
 	private static Logger logger = Logger.getLogger("SMScontroller.class");
-
+	@Autowired
+	private LogService logServic;
 	/**
 	 * 获取验证码
 	 * 
@@ -81,11 +86,20 @@ public class SMScontroller {
 		// 将短信内容发送到消息队列
 		RabbitMqSend.send(phone + "---" + message);
 
+		//将日志消息发送到消息队列中
+		
+		
 		// 返回接口的Json
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("code", code);
 		 
 		unResponse.setResult(map);
+		
+		Log log = new Log();
+		 
+		log.setMessage("haha");
+		log.setCreatDate(new Date());
+		logServic.saveLog(log);
 		return unResponse;
 	}
 

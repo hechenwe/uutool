@@ -48,7 +48,7 @@
         <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>   
     </listener>
    
-   <!-- 消息队列组件 监听器 -->
+   消息队列组件 监听器
 <listener>
         <listener-class>com.eduspace.service.rabbitmq.RabbitMQlistener</listener-class>
 </listener>
