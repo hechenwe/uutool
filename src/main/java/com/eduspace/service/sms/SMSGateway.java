@@ -6,6 +6,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import org.apache.log4j.Logger;
+
 import com.eduspace.util.PathUtil;
 import com.eduspace.util.PropertiesUtil;
  
@@ -15,13 +17,15 @@ import com.eduspace.util.PropertiesUtil;
  *
  */
 public class SMSGateway {
+	private static Logger logger = Logger.getLogger("SMSGateway.class");
     /**
      * 发送短信
      * @param telephone 手机号码
      * @param massage 短信内容
      * @return
+     * @throws Exception 
      */
-	public  static void send(String telephone, String massage) {
+	public  static void send(String telephone, String massage) throws Exception {
 		String src = PathUtil.getSrc();
 		PropertiesUtil pu = new PropertiesUtil(src+"smsCode.properties");
         String urlString = pu.getString("url");
@@ -29,7 +33,7 @@ public class SMSGateway {
         String username = pu.getString("username");
         String password = pu.getString("password");
 		StringBuffer sb = new StringBuffer(urlString); // 创建StringBuffer对象用来操作字符串
-		try {
+		//try {
 			sb.append("apikey="+apikey); // APIKEY
 			sb.append("&username="+username); // 用户名
 			sb.append("&password="+password); // 向StringBuffer追加密码
@@ -40,11 +44,11 @@ public class SMSGateway {
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();// 打开url连接
 			connection.setRequestMethod("POST");// 设置url请求方式 ‘get’ 或者 ‘post’
 			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream())); // 发送
-			System.out.println("【短信验证码】"+in.readLine()); // 输出结果
+			logger.info("【短信验证码】"+in.readLine()); // 输出结果
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		//} catch (Exception e) {
+		//	e.printStackTrace();
+		//}
 		 
 	}
 }

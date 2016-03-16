@@ -1,7 +1,8 @@
 package com.eduspace.util;
 
- 
-
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,10 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 public class RequestUtil {
 
 	private HttpServletRequest request;
-	
-	public RequestUtil(HttpServletRequest request){
+
+	public RequestUtil(HttpServletRequest request) {
 		this.request = request;
 	}
+
 	/**
 	 * 获取String类型的参数
 	 * 
@@ -27,15 +29,43 @@ public class RequestUtil {
 	 * @param parameterName
 	 * @return
 	 */
-	public  String getString( String parameterName) {
+	public String getString(String parameterName) {
 
 		String str = this.request.getParameter(parameterName);
-		if(str != null){
+		if (str != null) {
 			return str.trim();
-		}else{
+		} else {
 			return null;
 		}
-		 
+
+	}
+
+	/**
+	 * 获取 request中的实体模型 对象
+	 * @param entityClass 实体模型的类型 
+	 * @return 模型对象
+	 */
+	public Object getEntity(Class<?> entityClass) {
+
+		try {
+			Object object = entityClass.newInstance();
+			Field[] fields = entityClass.getDeclaredFields();
+			for (Field field : fields) {
+				Object value = request.getParameter(field.getName());
+				if (value == null) {
+					continue;
+				}
+				PropertyDescriptor pd = new PropertyDescriptor(field.getName(), entityClass);
+				// 获得set方法
+				Method method = pd.getWriteMethod();
+				method.invoke(object, value);
+			}
+			return object;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
@@ -45,16 +75,16 @@ public class RequestUtil {
 	 * @param parameterName
 	 * @return
 	 */
-	public  Integer getInt( String parameterName) {
+	public Integer getInt(String parameterName) {
 		String str = this.request.getParameter(parameterName);
 		Integer parameter = null;
 		if (str != null && !str.equals("")) {
 			try {
 				parameter = Integer.parseInt(str.trim());
 			} catch (Exception e) {
-				
+
 			}
-		}  
+		}
 		return parameter;
 	}
 
@@ -72,12 +102,12 @@ public class RequestUtil {
 			try {
 				parameter = Long.parseLong(str.trim());
 			} catch (Exception e) {
-				
+
 			}
-		}  
+		}
 		return parameter;
 	}
-	
+
 	/**
 	 * 获取boolean类型的参数
 	 * 
@@ -85,19 +115,19 @@ public class RequestUtil {
 	 * @param parameterName
 	 * @return
 	 */
-	public  Boolean getBoolean( String parameterName) {
+	public Boolean getBoolean(String parameterName) {
 		String str = this.request.getParameter(parameterName);
 		Boolean parameter = null;
 		if (str != null && !str.equals("")) {
 			try {
 				parameter = Boolean.parseBoolean(str.trim());
 			} catch (Exception e) {
-				
+
 			}
-		}  
+		}
 		return parameter;
 	}
-	
+
 	/**
 	 * 获取byte类型的参数
 	 * 
@@ -105,20 +135,19 @@ public class RequestUtil {
 	 * @param parameterName
 	 * @return
 	 */
-	public   Byte getByte(  String parameterName) {
+	public Byte getByte(String parameterName) {
 		String str = this.request.getParameter(parameterName);
 		Byte parameter = null;
 		if (str != null && !str.equals("")) {
 			try {
 				parameter = Byte.parseByte(str.trim());
 			} catch (Exception e) {
-				
+
 			}
-		}  
+		}
 		return parameter;
 	}
-	
-	
+
 	/**
 	 * 获取short类型的参数
 	 * 
@@ -126,19 +155,19 @@ public class RequestUtil {
 	 * @param parameterName
 	 * @return
 	 */
-	public   Short getShort(  String parameterName) {
+	public Short getShort(String parameterName) {
 		String str = this.request.getParameter(parameterName);
 		Short parameter = null;
 		if (str != null && !str.equals("")) {
 			try {
 				parameter = Short.parseShort(str.trim());
 			} catch (Exception e) {
-				
+
 			}
-		}  
+		}
 		return parameter;
 	}
-	
+
 	/**
 	 * 获取float类型的参数
 	 * 
@@ -146,18 +175,19 @@ public class RequestUtil {
 	 * @param parameterName
 	 * @return
 	 */
-	public   Float getFloat(  String parameterName) {
+	public Float getFloat(String parameterName) {
 		String str = this.request.getParameter(parameterName);
 		Float parameter = null;
 		if (str != null && !str.equals("")) {
 			try {
 				parameter = Float.parseFloat(str.trim());
 			} catch (Exception e) {
-				
+
 			}
-		}  
+		}
 		return parameter;
 	}
+
 	/**
 	 * 获取double类型的参数
 	 * 
@@ -165,40 +195,41 @@ public class RequestUtil {
 	 * @param parameterName
 	 * @return
 	 */
-	public Double getDouble(  String parameterName) {
+	public Double getDouble(String parameterName) {
 		String str = this.request.getParameter(parameterName);
 		Double parameter = null;
 		if (str != null && !str.equals("")) {
 			try {
 				parameter = Double.parseDouble(str.trim());
 			} catch (Exception e) {
-				
+
 			}
-		}  
+		}
 		return parameter;
 	}
-	
+
 	/**
 	 * 获取Date类型的参数
 	 * 
-	 * @param request 
-	 * @param parameterName 参数名称
-	 * @param formatDate 时间格式 如："yyyy-MM-dd"
+	 * @param request
+	 * @param parameterName
+	 *            参数名称
+	 * @param formatDate
+	 *            时间格式 如："yyyy-MM-dd"
 	 * @return
 	 */
-	public Date getDate(  String parameterName ,String formatDate) {
+	public Date getDate(String parameterName, String formatDate) {
 		String str = this.request.getParameter(parameterName);
 		Date parameter = null;
 		if (str != null && !str.equals("")) {
 			try {
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);//小写的mm表示的是分钟  
-				parameter = simpleDateFormat.parse(str.trim());  
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);// 小写的mm表示的是分钟
+				parameter = simpleDateFormat.parse(str.trim());
 			} catch (Exception e) {
-				
+
 			}
-		}  
+		}
 		return parameter;
 	}
- 
- 
+
 }
