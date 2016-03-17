@@ -10,22 +10,19 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.eduspace.dao.sms.interfac.SmsDayStatDaoI;
-import com.eduspace.dao.sms.interfac.SmsDayTypeStatDaoI;
-import com.eduspace.dao.sms.interfac.SmsLogDaoI;
-import com.eduspace.dao.sms.interfac.SmsMonthStatDaoI;
-import com.eduspace.dao.sms.interfac.SmsStatDaoI;
+ 
 import com.eduspace.entity.sms.SmsDayTypeStat;
 import com.eduspace.entity.sms.SmsLog;
 import com.eduspace.entity.sms.SmsStat;
 import com.eduspace.service.rabbitmq.RabbitMqSend;
 import com.eduspace.service.sms.Code;
-import com.eduspace.util.ClassCache;
+import com.eduspace.service.sms.SmsService;
 import com.eduspace.util.JsonUtil;
 import com.eduspace.util.OauthResponse;
 import com.eduspace.util.OauthUtil;
@@ -46,17 +43,11 @@ import com.eeduspace.uuims.api.exception.ApiException;
 @RequestMapping("/sms")
 public class SMScontroller {
 
+	
 	public static Logger logger = Logger.getLogger("SMScontroller.class");
-
-	private SmsDayStatDaoI smsDayStatDao = (SmsDayStatDaoI) ClassCache.getImplementObject(SmsDayStatDaoI.class);
-
-	private SmsLogDaoI smsLogDao = (SmsLogDaoI) ClassCache.getImplementObject(SmsLogDaoI.class);
-
-	private SmsMonthStatDaoI smsMonthStatDao = (SmsMonthStatDaoI) ClassCache.getImplementObject(SmsMonthStatDaoI.class);
-
-	private SmsStatDaoI smsStatDao = (SmsStatDaoI) ClassCache.getImplementObject(SmsStatDaoI.class);
-	private SmsDayTypeStatDaoI smsDayTypeStatDao = (SmsDayTypeStatDaoI) ClassCache.getImplementObject(SmsDayTypeStatDaoI.class);
-
+    @Autowired
+	private SmsService smsServic ;
+	 
 	/**
 	 * 获取验证码
 	 * 
@@ -129,14 +120,14 @@ public class SMScontroller {
 	 * @throws IOException
 	 * @throws UnsupportedEncodingException
 	 */
-	@RequestMapping(value = "/get", method = RequestMethod.POST)
+	@RequestMapping(value = "/getSmsLogIndex", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> get(HttpServletRequest request) {
+	public Map<String, Object> getSmsLogIndex(HttpServletRequest request) {
 		RequestUtil ru = new RequestUtil(request);
 		String productId = ru.getString("productId");
 		SmsStat ss = new SmsStat();
 		ss.setProductId(productId);
-		ss = smsStatDao.get(ss);
+		ss = smsServic.smsStatDao.get(ss);
 
 		SmsDayTypeStat sdts = new SmsDayTypeStat();
 
@@ -145,13 +136,32 @@ public class SMScontroller {
 
 		String today = String2Date.getString(new Date(), "yyyy-MM-dd");
 
-		List<SmsDayTypeStat> sdtss = smsDayTypeStatDao.startGets(sdts).like("date", today).endGets();
-
+		List<SmsDayTypeStat> sdtss = smsServic.smsDayTypeStatDao.startGets(sdts).like("date", today).endGets();
+        
+		List<Map<String, Object>> list = smsServic.smsLogDao.getScopeStat(productId, "today");
+		
 		Map<String, Object> map = new HashMap<>();
 		map.put("smsStat", ss);
 		map.put("smsDayTypeStats", sdtss);
+		map.put("hourData", list);
 
 		return map;
 	}
-
+	
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/getDetail", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> getDetail(HttpServletRequest request){
+		RequestUtil ru = new RequestUtil(request);
+		String productId = ru.getString("productId");
+		String type = ru.getString("type");
+		Map <String,Object> map = new HashMap<>();
+		map = smsServic.getDetail(productId, type) ;
+		
+		return map;
+	}
 }
