@@ -161,7 +161,6 @@ public class SMScontroller {
 		String type = ru.getString("type");
 		Map <String,Object> map = new HashMap<>();
 		map = smsServic.getDetail(productId, type) ;
-		
 		return map;
 	}
 }
