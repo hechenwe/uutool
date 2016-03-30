@@ -17,14 +17,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.eduspace.dao.CommonDao;
-import com.eduspace.dao.sms.SmsLogDao;
-import com.eduspace.entity.sms.SmsDayTypeStat;
-import com.eduspace.entity.sms.SmsLog;
-import com.eduspace.entity.sms.SmsMonthStat;
-import com.eduspace.entity.sms.SmsStat;
+import com.eduspace.dao.email.interfac.EmailDayStatDaoI;
+import com.eduspace.dao.email.interfac.EmailDayTypeStatDaoI;
+import com.eduspace.dao.email.interfac.EmailLogDaoI;
+import com.eduspace.dao.email.interfac.EmailMonthStatDaoI;
+import com.eduspace.dao.email.interfac.EmailStatDaoI;
+import com.eduspace.entity.email.EmailDayTypeStat;
+import com.eduspace.entity.email.EmailLog;
+import com.eduspace.entity.email.EmailMonthStat;
+import com.eduspace.entity.email.EmailStat;
+import com.eduspace.service.email.EmailLogService;
 import com.eduspace.service.rabbitmq.RabbitMqSend;
-import com.eduspace.service.sms.Code;
-import com.eduspace.service.sms.SmsService;
+import com.eduspace.util.ClassCache;
 import com.eduspace.util.Ent2Map;
 import com.eduspace.util.JsonUtil;
 import com.eduspace.util.OauthResponse;
@@ -44,35 +48,35 @@ import com.sooncode.jdbc.Jdbc;
  */
 
 @Controller
-@RequestMapping("/sms")
-public class SMScontroller {
+@RequestMapping("/email")
+public class EmailController {
 
-	
 	public static Logger logger = Logger.getLogger("SMScontroller.class");
     @Autowired
-	private SmsService smsServic ;
-	 
+    private EmailLogService emailLogService;
 	/**
-	 * 获取验证码
 	 * 
 	 * @param request
-	 * @param session
 	 * @return
 	 * @throws ApiException
 	 * @throws IOException
-	 * @throws UnsupportedEncodingException
 	 */
-	@RequestMapping(value = "/verificationCode", method = RequestMethod.POST)
+	@RequestMapping(value = "/sendEmail", method = RequestMethod.POST)
 	@ResponseBody
-	public UnResponse verificationCode(HttpServletRequest request) throws ApiException, IOException {
+	public UnResponse sendEmail(HttpServletRequest request) throws ApiException, IOException {
 		RequestUtil ru = new RequestUtil(request);
+				
 		String openId = ru.getString("openId");
 		String password = ru.getString("password");
 		String phone = ru.getString("phone");
-		String sendType = ru.getString("sendType");
 		String requestId = ru.getString("requestId");
-		String message = ru.getString("message");
-
+		String email = ru.getString("email");
+		String subject = ru.getString("subject");
+		String body = ru.getString("body");
+		String sendType = ru.getString("sendType");
+		 
+		
+		
 		// oauth 认证
 		OauthResponse oauthResponse = OauthUtil.oauth(openId, phone, password);
 
@@ -80,42 +84,34 @@ public class SMScontroller {
 		String responseCode = oauthResponse.getResponseCode();
 
 		UnResponse unResponse = new UnResponse();
+		unResponse.setRequestId(requestId);
 		unResponse = ResponseCache.getCache().get(responseCode);
 		// 认证失败
 		if (!responseCode.equals("Success")) {
 			return unResponse;
 		}
+		 
+		
+		EmailLog emailLog = new EmailLog();
+		emailLog.setOpenId(openId);
+		emailLog.setRequestDate(String2Date.getString(new Date()));
+		emailLog.setBody(body); 
+		emailLog.setEmail(email); 
+		emailLog.setSubject(subject); 
+		emailLog.setPhone(phone);
+		emailLog.setProductId(oauthResponse.getProductId());
+		emailLog.setProductName(oauthResponse.getProductName());
+		emailLog.setRequestId(requestId);
+		emailLog.setUserId(oauthResponse.getUserId());
+        emailLog.setSendType(sendType);
+		RabbitMqSend.send("EMAIL_QUEUE",new JsonUtil<EmailLog>().getJson(emailLog));
+		 
 
-		// 获取短信内容
-		String code = Code.sixCode();// 短信验证码
-		if (sendType.equals("other")) {// 自定义模板
-			message = Code.getOtherMessage(message, code, oauthResponse.getProductName());
-		} else { // 定制模板
-			message = Code.getMessage(sendType, code, oauthResponse.getProductName());
-		}
-
-		SmsLog messageLog = new SmsLog();
-		messageLog.setOpenId(openId);
-		messageLog.setSendType(sendType);
-		messageLog.setRequestDate(String2Date.getString(new Date()));
-		messageLog.setMessage(message);
-		messageLog.setPhone(phone);
-		messageLog.setProductId(oauthResponse.getProductId());
-		messageLog.setProductName(oauthResponse.getProductName());
-		messageLog.setRequestId(requestId);
-		messageLog.setUserId(oauthResponse.getUserId());
-		// 将短信内容发送到消息队列
-		RabbitMqSend.send("SMS_QUEUE", new JsonUtil<SmsLog>().getJson(messageLog));
-		// 返回接口的Json
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("code", code);
-		unResponse.setRequestId(requestId);
-		unResponse.setResult(map);
 		return unResponse;
 	}
 
 	/**
-	 * 获取
+	 * 
 	 * 
 	 * @param request
 	 * @param session
@@ -124,31 +120,28 @@ public class SMScontroller {
 	 * @throws IOException
 	 * @throws UnsupportedEncodingException
 	 */
-	@RequestMapping(value = "/getSmsLogIndex", method = RequestMethod.POST)
+	@RequestMapping(value = "/getEmailLogIndex", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> getSmsLogIndex(HttpServletRequest request) {
+	public Map<String, Object> getEmailLogIndex(HttpServletRequest request) {
 		RequestUtil ru = new RequestUtil(request);
 		String productId = ru.getString("productId");
-		SmsStat ss = new SmsStat();
-		ss.setProductId(productId);
-		ss = smsServic.smsStatDao.get(ss);
-        Map<String,Object> smsStatMap = Ent2Map.getMap(ss,"NOT_NEED", "productId","statId");
-		
-		SmsDayTypeStat sdts = new SmsDayTypeStat();
+		EmailStat es = new EmailStat();
+		es.setProductId(productId);
+		es = emailLogService.emailStatDao.get(es);
+        Map<String,Object> emailStatMap = Ent2Map.getMap(es, "NOT_NEED","statId","productId");
+        
+		EmailDayTypeStat edts = new EmailDayTypeStat();
 
-		sdts.setProductId(productId);
-		sdts.setDate(new Date());
-
+		edts.setProductId(productId);
+		edts.setDate(new Date());
 		String today = String2Date.getString(new Date(), "yyyy-MM-dd");
-
-		List<SmsDayTypeStat> sdtss = smsServic.smsDayTypeStatDao.startGets(sdts).like("date", today).endGets();
-        List<Map<String,Object>> smsDayTypeStatsList = Ent2Map.getList(sdtss, "NEED","type","number");
-		
-		List<Map<String, Object>> list = CommonDao.getScopeStat(new Jdbc(), productId, "today", SmsLog.class, SmsDayTypeStat.class, SmsMonthStat.class);
+		List<EmailDayTypeStat> edtss = emailLogService.emailDayTypeStatDao.startGets(edts).like("date", today).endGets();
+        List<Map<String,Object>> emailDayTypeStatList = Ent2Map.getList(edtss, "NEED","number","type");
+        List<Map<String, Object>> list = CommonDao.getScopeStat(new Jdbc(), productId, "today", EmailLog.class, EmailDayTypeStat.class, EmailMonthStat.class);
 		
 		Map<String, Object> map = new HashMap<>();
-		map.put("main", smsStatMap);
-		map.put("typeStat", smsDayTypeStatsList);
+		map.put("main", emailStatMap);
+		map.put("typeStat", emailDayTypeStatList);
 		map.put("scopeData", list);
 
 		return map;
@@ -166,7 +159,7 @@ public class SMScontroller {
 		String productId = ru.getString("productId");
 		String type = ru.getString("type");
 		Map <String,Object> map = new HashMap<>();
-		map = smsServic.getDetail(productId, type) ;
+		map = emailLogService.getDetail(productId, type) ;
 		return map;
 	}
 }
