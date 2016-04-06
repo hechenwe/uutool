@@ -1,7 +1,5 @@
 package com.eduspace.util;
 
- 
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +18,7 @@ public class ClassCache {
 	public final static Logger logger = Logger.getLogger("ClassCache.class");
 	public static String root;
 	public static List<String> classCache;
-    
+
 	public static Map<String, List<String>> interfacCache;
 
 	static {
@@ -31,17 +29,10 @@ public class ClassCache {
 	}
 
 	public static String getSrc() {
-		String src = "";
-		try {
-			src = Thread.currentThread().getContextClassLoader().getResource("/").getPath() + "";
-			//src = src.substring(0,1);
-			src = src.substring(1,src.length()-1);
-            logger.info("【src】:>"+src+"<");
-		} catch (Exception e) {
-			src = System.getProperty("user.dir") + File.separatorChar + "build"+ File.separatorChar+"classes";
-			logger.info("【src】:"+src);
-		}
-		return src;
+		String webRoot = System.getProperty("uutool.root");
+		String classesPath = webRoot+"WEB-INF" + File.separatorChar + "classes";
+		logger.info("【classes 目录】："+classesPath);
+		return classesPath;
 	}
 
 	/**
@@ -58,7 +49,7 @@ public class ClassCache {
 			if (fileName.contains(".class")) {
 				String packageName = path + "";
 				packageName = packageName.replace(root + File.separatorChar, "").replace(File.separatorChar + "", ".");
-                fileName = fileName.replace(".class", "");
+				fileName = fileName.replace(".class", "");
 				String className = packageName + "." + fileName;
 				classCache.add(className);
 				try {
@@ -66,15 +57,15 @@ public class ClassCache {
 
 					Class<?> interfaces[] = null;// 声明一个对象数组
 					interfaces = cla.getInterfaces();// 获取类实现的所有接口
-				    String interfaceName = "";
-				    List<String> classList = new ArrayList<>() ;
+					String interfaceName = "";
+					List<String> classList = new ArrayList<>();
 					if (interfaces.length == 1) {
 						interfaceName = interfaces[0].getName();
-						 classList = interfacCache.get(interfaceName);
+						classList = interfacCache.get(interfaceName);
 					}
 
 					if (classList == null) {
-						classList = new ArrayList<>() ;
+						classList = new ArrayList<>();
 						classList.add(className);
 						interfacCache.put(interfaceName, classList);
 					}
@@ -93,7 +84,9 @@ public class ClassCache {
 
 	/**
 	 * 获取接口的唯一实现类实例
-	 * @param interfac 接口
+	 * 
+	 * @param interfac
+	 *            接口
 	 * @return 接口的唯一实现类实例
 	 */
 	public static Object getImplementObject(Class<?> interfac) {
