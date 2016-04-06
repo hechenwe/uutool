@@ -41,7 +41,7 @@ public class SmsSataTimer {
 	private SmsStatDaoI smsStatDao = (SmsStatDaoI) ClassCache.getImplementObject(SmsStatDaoI.class);
 	private SmsDayTypeStatDaoI smsDayTypeStatDao= (SmsDayTypeStatDaoI) ClassCache.getImplementObject(SmsDayTypeStatDaoI.class);
 
-	@Scheduled(cron = "0/5 * *  * * ?")
+	@Scheduled(cron = "0/60 * *  * * ?")
 	public void sata() {
 		logger.info("【短信--定时器】：" + new Date());
 		String format = "yyyy-MM-dd";

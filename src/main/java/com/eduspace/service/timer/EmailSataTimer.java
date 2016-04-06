@@ -41,7 +41,7 @@ public class EmailSataTimer {
 	private EmailStatDaoI emailStatDao = (EmailStatDaoI) ClassCache.getImplementObject(EmailStatDaoI.class);
 	private EmailDayTypeStatDaoI emailDayTypeStatDao= (EmailDayTypeStatDaoI) ClassCache.getImplementObject(EmailDayTypeStatDaoI.class);
 
-	@Scheduled(cron = "0/5 * *  * * ?")
+	@Scheduled(cron = "0/60 * *  * * ?")
 	public void sata() {
 		logger.info("【邮件--定时器】：" + new Date());
 		String format = "yyyy-MM-dd";

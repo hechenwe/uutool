@@ -38,10 +38,11 @@ public class RabbitMqRecieve extends Thread {
 		 
 		// 打开连接和创建频道，与发送端一样
 		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("localhost");
+		//factory.setHost("localhost");
 		
-	    //factory.setHost(host);factory.setVirtualHost("test_vhost");factory.setPort(port);factory.setUsername(username);factory.setPassword(password);
-		Connection connection;
+	    factory.setHost(host);factory.setPort(port);factory.setUsername(username);factory.setPassword(password);
+	    factory.setVirtualHost("/tool");
+	    Connection connection;
 		QueueingConsumer consumer = null;
 		try {
 			connection = factory.newConnection();
@@ -55,26 +56,10 @@ public class RabbitMqRecieve extends Thread {
 			logger.info("【消息队列】开始监听...");
 			while (!this.isInterrupted()) {// 线程未中断执行循环
 					Thread.sleep(sleepTime); //  
-					Delivery delivery = consumer.nextDelivery();
+					Delivery delivery = consumer.nextDelivery();//一直在等待 消息 
 					String mqMessage = new String(delivery.getBody());
-					
+					logger.info("【消息队列 捕获的消息】"+ mqMessage);
 					doo.doSomething(mqMessage);
-					
-					
-					/*MessageLog log = new MessageLog();
-					log = new  JsonUtil<MessageLog>().getObject(mqMessage, MessageLog.class);
-					log.setSendDate(String2Date.getString(new Date()) );
-					try{
-					SMSGateway.send(log.getPhone(), log.getMessage());
-					log.setMessageState("1");
-					}catch(Exception e) {
-						log.setMessageState("0");
-						e.printStackTrace();
-					}finally {
-						log.setLogDate(String2Date.getString(new Date()));
-						new LogDao().save(log);
-						 
-					}*/
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

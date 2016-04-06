@@ -29,7 +29,7 @@ public class EmailDo implements Do {
 		log.setLogDate(String2Date.getString(new Date()) );
 		try {
 			
-			String body =new  FileUtil().readFile(PathUtil.getWebRoot()+"email.html");
+			String body =log.getBody()  ;//new  FileUtil().readFile(PathUtil.getWebRoot()+"email.html");
 			
 			body = body.replace("${activeUrl}", log.getBody());
 			

@@ -25,15 +25,18 @@ public class RabbitMqSend {
          */  
         ConnectionFactory factory = new ConnectionFactory();  
         //设置MabbitMQ所在主机ip或者主机名  
-        PropertiesUtil pu = new PropertiesUtil(PathUtil.getSrc()+"rabbitMQ.properties");
+         PropertiesUtil pu = new PropertiesUtil(PathUtil.getSrc()+"rabbitMQ.properties");
          String host = pu.getString("host");
 		 Integer port = pu.getInt("port");
 		 String username = pu.getString("username");
 		 String password = pu.getString("password");
-        factory.setHost("localhost");  
-       // factory.setPort(port);
-       // factory.setUsername(username);
-       // factory.setPassword(password);
+		 //factory.setHost("localhost");
+         factory.setHost(host);  
+         factory.setPort(port);
+         factory.setUsername(username);
+         factory.setPassword(password);
+         factory.setVirtualHost("/tool");
+        
         //创建一个连接  
         Connection connection;
 		try {
