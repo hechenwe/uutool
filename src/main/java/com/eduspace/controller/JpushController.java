@@ -22,10 +22,10 @@ import com.eduspace.entity.jpush.JpushMonthStat;
 import com.eduspace.entity.jpush.JpushStat;
 import com.eduspace.service.jpush.JpushLogService;
 import com.eduspace.service.rabbitmq.RabbitMqSend;
+import com.eduspace.service.sms.OauthUtil;
 import com.eduspace.util.Ent2Map;
 import com.eduspace.util.JsonUtil;
 import com.eduspace.util.OauthResponse;
-import com.eduspace.util.OauthUtil;
 import com.eduspace.util.RequestUtil;
 import com.eduspace.util.ResponseCache;
 import com.eduspace.util.String2Date;
@@ -66,8 +66,9 @@ public class JpushController {
 		 
 		JpushLog log = (JpushLog) ru.getEntity(JpushLog.class);
 		log.setRequestDate(String2Date.getString(new Date())); 
-		// oauth 认证
-		OauthResponse oauthResponse = OauthUtil.oauth(openId, phone, password);
+		 String remoteAddr = request.getRemoteAddr();
+			// oauth 认证
+		OauthResponse oauthResponse = OauthUtil.oauth(openId,password ,phone,"",remoteAddr);
 
 		// 请求状态码
 		String responseCode = oauthResponse.getResponseCode();

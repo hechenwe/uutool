@@ -28,11 +28,11 @@ import com.eduspace.entity.email.EmailMonthStat;
 import com.eduspace.entity.email.EmailStat;
 import com.eduspace.service.email.EmailLogService;
 import com.eduspace.service.rabbitmq.RabbitMqSend;
+import com.eduspace.service.sms.OauthUtil;
 import com.eduspace.util.ClassCache;
 import com.eduspace.util.Ent2Map;
 import com.eduspace.util.JsonUtil;
 import com.eduspace.util.OauthResponse;
-import com.eduspace.util.OauthUtil;
 import com.eduspace.util.RequestUtil;
 import com.eduspace.util.ResponseCache;
 import com.eduspace.util.String2Date;
@@ -52,8 +52,9 @@ import com.sooncode.jdbc.Jdbc;
 public class EmailController {
 
 	public static Logger logger = Logger.getLogger("SMScontroller.class");
-    @Autowired
-    private EmailLogService emailLogService;
+	@Autowired
+	private EmailLogService emailLogService;
+
 	/**
 	 * 
 	 * @param request
@@ -65,7 +66,7 @@ public class EmailController {
 	@ResponseBody
 	public UnResponse sendEmail(HttpServletRequest request) throws ApiException, IOException {
 		RequestUtil ru = new RequestUtil(request);
-				
+
 		String openId = ru.getString("openId");
 		String password = ru.getString("password");
 		String phone = ru.getString("phone");
@@ -74,11 +75,10 @@ public class EmailController {
 		String subject = ru.getString("subject");
 		String body = ru.getString("body");
 		String sendType = ru.getString("sendType");
-		 
-		
-		
+
+		String remoteAddr = request.getRemoteAddr();
 		// oauth 认证
-		OauthResponse oauthResponse = OauthUtil.oauth(openId, phone, password);
+		OauthResponse oauthResponse = OauthUtil.oauth(openId, password, phone, sendType, remoteAddr);
 
 		// 请求状态码
 		String responseCode = oauthResponse.getResponseCode();
@@ -90,22 +90,20 @@ public class EmailController {
 		if (!responseCode.equals("Success")) {
 			return unResponse;
 		}
-		 
-		
+
 		EmailLog emailLog = new EmailLog();
 		emailLog.setOpenId(openId);
 		emailLog.setRequestDate(String2Date.getString(new Date()));
-		emailLog.setBody(body); 
-		emailLog.setEmail(email); 
-		emailLog.setSubject(subject); 
+		emailLog.setBody(body);
+		emailLog.setEmail(email);
+		emailLog.setSubject(subject);
 		emailLog.setPhone(phone);
 		emailLog.setProductId(oauthResponse.getProductId());
 		emailLog.setProductName(oauthResponse.getProductName());
 		emailLog.setRequestId(requestId);
 		emailLog.setUserId(oauthResponse.getUserId());
-        emailLog.setSendType(sendType);
-		RabbitMqSend.send("EMAIL_QUEUE",new JsonUtil<EmailLog>().getJson(emailLog));
-		 
+		emailLog.setSendType(sendType);
+		RabbitMqSend.send("EMAIL_QUEUE", new JsonUtil<EmailLog>().getJson(emailLog));
 
 		return unResponse;
 	}
@@ -126,19 +124,24 @@ public class EmailController {
 		RequestUtil ru = new RequestUtil(request);
 		String productId = ru.getString("productId");
 		EmailStat es = new EmailStat();
-		es.setProductId(productId);
-		es = emailLogService.emailStatDao.get(es);
-        Map<String,Object> emailStatMap = Ent2Map.getMap(es, "NOT_NEED","statId","productId");
-        
+		Map<String, Object> emailStatMap;
+		if (productId != null && !productId.equals("")) {
+			es.setProductId(productId);
+			es = emailLogService.emailStatDao.get(es);
+			emailStatMap = Ent2Map.getMap(es, "NOT_NEED", "statId", "productId");
+		} else {
+			emailStatMap = emailLogService.emailStatDao.getTotal();
+		}
+
 		EmailDayTypeStat edts = new EmailDayTypeStat();
 
 		edts.setProductId(productId);
 		edts.setDate(new Date());
 		String today = String2Date.getString(new Date(), "yyyy-MM-dd");
 		List<EmailDayTypeStat> edtss = emailLogService.emailDayTypeStatDao.startGets(edts).like("date", today).endGets();
-        List<Map<String,Object>> emailDayTypeStatList = Ent2Map.getList(edtss, "NEED","number","type");
-        List<Map<String, Object>> list = CommonDao.getScopeStat(new Jdbc(), productId, "today", EmailLog.class, EmailDayTypeStat.class, EmailMonthStat.class);
-		
+		List<Map<String, Object>> emailDayTypeStatList = Ent2Map.getList(edtss, "NEED", "number", "type");
+		List<Map<String, Object>> list = CommonDao.getScopeStat(new Jdbc(), productId, "today", EmailLog.class, EmailDayTypeStat.class, EmailMonthStat.class);
+
 		Map<String, Object> map = new HashMap<>();
 		map.put("main", emailStatMap);
 		map.put("typeStat", emailDayTypeStatList);
@@ -146,7 +149,7 @@ public class EmailController {
 
 		return map;
 	}
-	
+
 	/**
 	 * 
 	 * @param request
@@ -154,12 +157,12 @@ public class EmailController {
 	 */
 	@RequestMapping(value = "/getDetail", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String,Object> getDetail(HttpServletRequest request){
+	public Map<String, Object> getDetail(HttpServletRequest request) {
 		RequestUtil ru = new RequestUtil(request);
 		String productId = ru.getString("productId");
 		String type = ru.getString("type");
-		Map <String,Object> map = new HashMap<>();
-		map = emailLogService.getDetail(productId, type) ;
+		Map<String, Object> map = new HashMap<>();
+		map = emailLogService.getDetail(productId, type);
 		return map;
 	}
 }

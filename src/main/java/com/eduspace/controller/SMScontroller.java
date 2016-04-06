@@ -24,11 +24,11 @@ import com.eduspace.entity.sms.SmsMonthStat;
 import com.eduspace.entity.sms.SmsStat;
 import com.eduspace.service.rabbitmq.RabbitMqSend;
 import com.eduspace.service.sms.Code;
+import com.eduspace.service.sms.OauthUtil;
 import com.eduspace.service.sms.SmsService;
 import com.eduspace.util.Ent2Map;
 import com.eduspace.util.JsonUtil;
 import com.eduspace.util.OauthResponse;
-import com.eduspace.util.OauthUtil;
 import com.eduspace.util.RequestUtil;
 import com.eduspace.util.ResponseCache;
 import com.eduspace.util.String2Date;
@@ -72,9 +72,9 @@ public class SMScontroller {
 		String sendType = ru.getString("sendType");
 		String requestId = ru.getString("requestId");
 		String message = ru.getString("message");
-
+        String remoteAddr = request.getRemoteAddr();
 		// oauth 认证
-		OauthResponse oauthResponse = OauthUtil.oauth(openId, phone, password);
+		OauthResponse oauthResponse = OauthUtil.oauth(openId,password ,phone,sendType,remoteAddr);
 
 		// 请求状态码
 		String responseCode = oauthResponse.getResponseCode();
