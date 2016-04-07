@@ -1,16 +1,11 @@
 package com.eduspace.service.email;
 
 import java.util.Date;
-
 import org.apache.log4j.Logger;
-
- 
 import com.eduspace.dao.email.EmailLogDao;
 import com.eduspace.entity.email.EmailLog;
 import com.eduspace.service.rabbitmq.Do;
-import com.eduspace.util.FileUtil;
 import com.eduspace.util.JsonUtil;
-import com.eduspace.util.PathUtil;
 import com.eduspace.util.String2Date;
 
 /**

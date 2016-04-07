@@ -24,12 +24,12 @@ public class ClassCache {
 	static {
 		classCache = new ArrayList<>();
 		interfacCache = new HashMap<>();
-		root = new ClassCache().getClasses();
+		root = getClasses();
 		findClass(classCache, root);
 	}
 
-	private String getClasses() {
-		   String path = this.getClass().getResource("/").getPath();
+	private  static String getClasses() {
+		   String path = new ClassCache().getClass().getResource("/").getPath();
 		   File file = new File(path);
 		   String classesPath = file.toString()+File.separatorChar;
 		   return classesPath;
@@ -104,7 +104,7 @@ public class ClassCache {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(ClassCache.classCache);
+		System.out.println(ClassCache.root);
 		System.out.println(ClassCache.interfacCache);
 	}
 }

@@ -24,7 +24,7 @@ public class DBs {
 		  List<String> dbConfig = getDbConfig();
 		  for (String str : dbConfig) {
 			 
-			  PropertiesUtil pu = new PropertiesUtil(new DBs().getClasses()+str);
+			  PropertiesUtil pu = new PropertiesUtil(getClasses()+str);
 			  DB db = new DB();
 			   
 			  db.setKey(pu.getString("KEY"));
@@ -51,7 +51,7 @@ public class DBs {
 	
 	
 	private static List<String> getDbConfig(){
-		  File file=new File(new DBs().getClasses());
+		  File file=new File(getClasses());
 		  String test[];
 		  test=file.list();
 		  List<String> dbCongig = new ArrayList<>() ;
@@ -67,8 +67,8 @@ public class DBs {
 		  return dbCongig;
 		
 	}
-	private String getClasses() {
-		String path = this.getClass().getResource("/").getPath();
+	private static  String getClasses() {
+		   String path = new DBs().getClass().getResource("/").getPath();
 		   File file = new File(path);
 		   String classesPath = file.toString()+File.separatorChar;
 		   return classesPath;

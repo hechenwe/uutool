@@ -10,15 +10,15 @@ import java.io.File;
 public class PathUtil {
  
 	public static String getSrc() {
-		 String src = new PathUtil().getClasses();
-		 return src;
-	}
-	private String getClasses() {
-		   String path = this.getClass().getResource("/").getPath();
+		   Object obj = new Object();
+		   String path = obj.getClass().getResource("/").getPath();
 		   File file = new File(path);
 		   String classesPath = file.toString()+File.separatorChar;
+		   obj = null;
 		   return classesPath;
-		  
-		}
-
+	}
+	 
+public static void main(String[] args) {
+	System.out.println("PathUtil.main()"+getSrc());
+}
 }

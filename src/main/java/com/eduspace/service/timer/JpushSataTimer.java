@@ -41,7 +41,7 @@ public class JpushSataTimer {
 	private JpushStatDaoI jpushStatDao = (JpushStatDaoI) ClassCache.getImplementObject(JpushStatDaoI.class);
 	private JpushDayTypeStatDaoI jpushDayTypeStatDao= (JpushDayTypeStatDaoI) ClassCache.getImplementObject(JpushDayTypeStatDaoI.class);
 
-	@Scheduled(cron = "0/60 * *  * * ?")
+	@Scheduled(cron = "0 */60 * * * ?")
 	public void sata() {
 		logger.info("【推送--定时器】：" + new Date());
 		String format = "yyyy-MM-dd";
