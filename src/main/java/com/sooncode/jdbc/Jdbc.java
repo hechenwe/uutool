@@ -3,6 +3,7 @@ package com.sooncode.jdbc;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,6 +34,7 @@ public class Jdbc {
 	public final static Logger logger = Logger.getLogger("JdbcUtil.class");
 	private static int counter = 0;
 	private DB db;
+	private String dbKey="default";
 
 	/**
 	 * 
@@ -40,17 +42,18 @@ public class Jdbc {
 	 *            数据源关键码
 	 */
 	public Jdbc(String dbKey) {
+		this.dbKey=dbKey;
 		this.db = DBs.getDB(dbKey);
 	}
     public Jdbc(){
-    	this.db = DBs.getDB("default");
+    	this.db = DBs.getDB(this.dbKey);
     }
     /**
      * 获取数据库连接
      * @return
      */
 	private Connection getConnection() {
-
+		this.db = DBs.getDB(this.dbKey);
 		String DRIVER = db.getDriver();
 		String IP = db.getIp();
 		String PORT = db.getPort();
@@ -71,6 +74,7 @@ public class Jdbc {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
 		return connnection;
 	}
 
@@ -243,6 +247,11 @@ public class Jdbc {
 					PropertyDescriptor pd = new PropertyDescriptor(field.getName(), entityClass);
 					// 获得set方法
 					Method method = pd.getWriteMethod();
+					/*if(value.getClass().getSimpleName().equals("BigDecimal")){
+						BigDecimal  b=new BigDecimal(value+"");
+						value =b.intValue();
+						 
+					}*/
 					method.invoke(object, value);
 				}
 				return object;

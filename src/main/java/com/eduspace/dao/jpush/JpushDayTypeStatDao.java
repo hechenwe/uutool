@@ -34,7 +34,13 @@ public class JpushDayTypeStatDao extends Dao<JpushDayTypeStat>implements JpushDa
 	}
 	@Override
 	public List<Map<String, Object>> getTypeStat(String productId, String startDate,String endDate) {
-		String sql = "SELECT SUM(NUMBER) AS NUMBER ,TYPE FROM JPUSH_DAY_TYPE_STAT WHERE PRODUCT_ID = '"+productId+"' AND DATE(DATE) BETWEEN '"+startDate+"' AND '"+endDate+"' GROUP BY TYPE";
+		String sql = "";
+		if(productId == null || productId.equals(""))
+		{
+			 sql = "SELECT SUM(NUMBER) AS NUMBER ,TYPE FROM JPUSH_DAY_TYPE_STAT WHERE DATE(DATE) BETWEEN '"+startDate+"' AND '"+endDate+"' GROUP BY TYPE";
+		}else{
+			 sql = "SELECT SUM(NUMBER) AS NUMBER ,TYPE FROM JPUSH_DAY_TYPE_STAT WHERE PRODUCT_ID = '"+productId+"' AND DATE(DATE) BETWEEN '"+startDate+"' AND '"+endDate+"' GROUP BY TYPE";
+		}
 		return jdbc.executeQueryL(sql);
 	}
 }

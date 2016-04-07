@@ -6,6 +6,8 @@ import java.util.Map;
 import com.eduspace.dao.sms.interfac.SmsDayTypeStatDaoI;
 import com.eduspace.entity.sms.SmsDayStat;
 import com.eduspace.entity.sms.SmsDayTypeStat;
+import com.eduspace.entity.sms.SmsStat;
+import com.eduspace.util.Ent2Map;
 import com.sooncode.jdbc.Dao;
 import com.sooncode.jdbc.sql.SQL;
 
@@ -36,7 +38,14 @@ public class SmsDayTypeStatDao extends Dao<SmsDayTypeStat>implements SmsDayTypeS
 
 	@Override
 	public List<Map<String, Object>> getSmsTypeStat(String productId, String startDate,String endDate) {
-		String sql = "SELECT SUM(NUMBER) AS NUMBER ,TYPE FROM SMS_DAY_TYPE_STAT WHERE PRODUCT_ID = '"+productId+"' AND DATE(DATE) BETWEEN '"+startDate+"' AND '"+endDate+"' GROUP BY TYPE";
+		String sql ="";
+		if(productId==null || productId.trim().equals("")){
+			 sql = "SELECT SUM(NUMBER) AS NUMBER ,TYPE FROM SMS_DAY_TYPE_STAT WHERE DATE(DATE) BETWEEN '"+startDate+"' AND '"+endDate+"' GROUP BY TYPE";
+			 logger.info("【getSmsTypeStat】："+sql);
+		}else{
+			 sql = "SELECT SUM(NUMBER) AS NUMBER ,TYPE FROM SMS_DAY_TYPE_STAT WHERE PRODUCT_ID = '"+productId+"' AND DATE(DATE) BETWEEN '"+startDate+"' AND '"+endDate+"' GROUP BY TYPE";
+			 
+		}
 		return jdbc.executeQueryL(sql);
 	}
 

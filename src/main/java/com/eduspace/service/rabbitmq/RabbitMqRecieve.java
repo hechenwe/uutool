@@ -40,8 +40,8 @@ public class RabbitMqRecieve extends Thread {
 		ConnectionFactory factory = new ConnectionFactory();
 		//factory.setHost("localhost");
 		
-	    factory.setHost(host);factory.setPort(port);factory.setUsername(username);factory.setPassword(password);
-	    factory.setVirtualHost("/tool");
+	    factory.setHost(host);factory.setPort(port);factory.setUsername(username);factory.setPassword(password);factory.setVirtualHost("/tool");
+	    
 	    Connection connection;
 		QueueingConsumer consumer = null;
 		try {

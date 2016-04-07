@@ -46,7 +46,8 @@ public class JpushController {
 
 	public static Logger logger = Logger.getLogger("JpushController.class");
 	@Autowired
-    public JpushLogService jpushLogService;
+	public JpushLogService jpushLogService;
+
 	/**
 	 * 
 	 * @param request
@@ -61,20 +62,23 @@ public class JpushController {
 
 		String openId = ru.getString("openId");
 		String password = ru.getString("password");
-		String phone = ""; ru.getString("phone");
-	//	String requestId = ru.getString("requestId");
-		 
-		JpushLog log = (JpushLog) ru.getEntity(JpushLog.class);
-		log.setRequestDate(String2Date.getString(new Date())); 
-		 String remoteAddr = request.getRemoteAddr();
-			// oauth 认证
-		OauthResponse oauthResponse = OauthUtil.oauth(openId,password ,phone,"",remoteAddr);
+		String phone = "";
+		ru.getString("phone");
+		// String requestId = ru.getString("requestId");
 
+		JpushLog log = (JpushLog) ru.getEntity(JpushLog.class);
+		log.setRequestDate(String2Date.getString(new Date()));
+		String remoteAddr = request.getRemoteAddr();
+		// oauth 认证
+		OauthResponse oauthResponse = OauthUtil.oauth(openId, password, phone, "jpush", remoteAddr);
+		UnResponse unResponse = new UnResponse();
+		if (oauthResponse==null) {
+			return unResponse;
+		}
 		// 请求状态码
 		String responseCode = oauthResponse.getResponseCode();
 
-		UnResponse unResponse = new UnResponse();
-		//unResponse.setRequestId(requestId);
+		// unResponse.setRequestId(requestId);
 		unResponse = ResponseCache.getCache().get(responseCode);
 		// 认证失败
 		if (!responseCode.equals("Success")) {
@@ -89,34 +93,30 @@ public class JpushController {
 		return unResponse;
 	}
 
-	
-	
 	@RequestMapping(value = "/getJpushLogIndex", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> getJpushLogIndex(HttpServletRequest request) {
 		RequestUtil ru = new RequestUtil(request);
 		String productId = ru.getString("productId");
 		JpushStat es = new JpushStat();
-		es.setProductId(productId);
-		es = jpushLogService.jpushStatDao.get(es);
-        Map<String,Object> jpushStatMap = Ent2Map.getMap(es, "NOT_NEED","statId","productId");
-        
-		JpushDayTypeStat edts = new JpushDayTypeStat();
+		Map<String, Object> jpushStatMap;
+		if (productId == null || "".equals(productId)) {
+			jpushStatMap = jpushLogService.jpushStatDao.getTotal();
+		} else {
 
-		edts.setProductId(productId);
-		edts.setDate(new Date());
-		String today = String2Date.getString(new Date(), "yyyy-MM-dd");
-		List<JpushDayTypeStat> edtss = jpushLogService.jpushDayTypeStatDao.startGets(edts).like("date", today).endGets();
-        List<Map<String,Object>> jpushDayTypeStatList = Ent2Map.getList(edtss, "NEED","number","type");
-        List<Map<String, Object>> list = CommonDao.getScopeStat(new Jdbc(), productId, "today", JpushLog.class, JpushDayTypeStat.class, JpushMonthStat.class);
-		
+			es.setProductId(productId);
+			es = jpushLogService.jpushStatDao.get(es);
+			jpushStatMap = Ent2Map.getMap(es, "NOT_NEED", "statId", "productId");
+		}
+
+
 		Map<String, Object> map = new HashMap<>();
 		map.put("main", jpushStatMap);
-		map.put("typeStat", jpushDayTypeStatList);
-		map.put("scopeData", list);
+		map.putAll(jpushLogService.getDetail(productId, "today"));
 
 		return map;
 	}
+
 	/**
 	 * 
 	 * @param request
@@ -124,12 +124,12 @@ public class JpushController {
 	 */
 	@RequestMapping(value = "/getDetail", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String,Object> getDetail(HttpServletRequest request){
+	public Map<String, Object> getDetail(HttpServletRequest request) {
 		RequestUtil ru = new RequestUtil(request);
 		String productId = ru.getString("productId");
 		String type = ru.getString("type");
-		Map <String,Object> map = new HashMap<>();
-		map = jpushLogService.getDetail(productId, type) ;
+		Map<String, Object> map = new HashMap<>();
+		map = jpushLogService.getDetail(productId, type);
 		return map;
 	}
 }

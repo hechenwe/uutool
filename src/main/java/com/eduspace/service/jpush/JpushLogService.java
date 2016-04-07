@@ -73,7 +73,7 @@ public class JpushLogService {
     		return map;
     	}
     	
-    	map.put("dayTypeStats",jpushDayTypeStatDao.getTypeStat(productId, startDay, today));
+    	map.put("typeStat",jpushDayTypeStatDao.getTypeStat(productId, startDay, today));
 		map.put("scopeData",CommonDao.getScopeStat(new Jdbc(), productId, type, JpushLog.class, JpushDayStat.class, JpushMonthStat.class));
 		return map;
     }

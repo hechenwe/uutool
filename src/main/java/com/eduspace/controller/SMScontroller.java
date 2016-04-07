@@ -129,28 +129,19 @@ public class SMScontroller {
 	public Map<String, Object> getSmsLogIndex(HttpServletRequest request) {
 		RequestUtil ru = new RequestUtil(request);
 		String productId = ru.getString("productId");
-		SmsStat ss = new SmsStat();
-		ss.setProductId(productId);
-		ss = smsServic.smsStatDao.get(ss);
-        Map<String,Object> smsStatMap = Ent2Map.getMap(ss,"NOT_NEED", "productId","statId");
-		
-		SmsDayTypeStat sdts = new SmsDayTypeStat();
-
-		sdts.setProductId(productId);
-		sdts.setDate(new Date());
-
-		String today = String2Date.getString(new Date(), "yyyy-MM-dd");
-
-		List<SmsDayTypeStat> sdtss = smsServic.smsDayTypeStatDao.startGets(sdts).like("date", today).endGets();
-        List<Map<String,Object>> smsDayTypeStatsList = Ent2Map.getList(sdtss, "NEED","type","number");
-		
-		List<Map<String, Object>> list = CommonDao.getScopeStat(new Jdbc(), productId, "today", SmsLog.class, SmsDayTypeStat.class, SmsMonthStat.class);
-		
+		Map<String,Object> smsStatMap;
+		if(productId==null || productId.trim().equals("")){
+			smsStatMap =smsServic.smsStatDao.getTotal();
+		}else{
+			SmsStat ss = new SmsStat();
+			ss.setProductId(productId);
+			ss = smsServic.smsStatDao.get(ss);
+	        smsStatMap = Ent2Map.getMap(ss,"NOT_NEED", "productId","statId");
+		}
+		 
 		Map<String, Object> map = new HashMap<>();
 		map.put("main", smsStatMap);
-		map.put("typeStat", smsDayTypeStatsList);
-		map.put("scopeData", list);
-
+		map.putAll(smsServic.getDetail(productId, "today"));
 		return map;
 	}
 	

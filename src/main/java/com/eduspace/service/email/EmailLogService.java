@@ -64,7 +64,7 @@ public class EmailLogService {
     		return map;
     	}
     	
-    	map.put("typeStats",emailDayTypeStatDao.getTypeStat(productId, startDay, today));
+    	map.put("typeStat",emailDayTypeStatDao.getTypeStat(productId, startDay, today));
 		map.put("scopeData",CommonDao.getScopeStat(new Jdbc(), productId, type, EmailLog.class, EmailDayStat.class, EmailMonthStat.class));
 		return map;
     }

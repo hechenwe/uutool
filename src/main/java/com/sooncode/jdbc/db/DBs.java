@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.sooncode.jdbc.util.PathUtil;
+ 
 import com.sooncode.jdbc.util.PropertiesUtil;
 
 /**
@@ -25,7 +24,7 @@ public class DBs {
 		  List<String> dbConfig = getDbConfig();
 		  for (String str : dbConfig) {
 			 
-			  PropertiesUtil pu = new PropertiesUtil(PathUtil.getSrc()+str);
+			  PropertiesUtil pu = new PropertiesUtil(new DBs().getClasses()+str);
 			  DB db = new DB();
 			   
 			  db.setKey(pu.getString("KEY"));
@@ -52,7 +51,7 @@ public class DBs {
 	
 	
 	private static List<String> getDbConfig(){
-		  File file=new File(PathUtil.getSrc());
+		  File file=new File(new DBs().getClasses());
 		  String test[];
 		  test=file.list();
 		  List<String> dbCongig = new ArrayList<>() ;
@@ -68,5 +67,10 @@ public class DBs {
 		  return dbCongig;
 		
 	}
-	
+	private String getClasses() {
+		String path = this.getClass().getResource("/").getPath();
+		   File file = new File(path);
+		   String classesPath = file.toString()+File.separatorChar;
+		   return classesPath;
+		}
 }

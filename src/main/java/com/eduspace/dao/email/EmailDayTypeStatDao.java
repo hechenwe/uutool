@@ -23,10 +23,7 @@ public class EmailDayTypeStatDao extends Dao<EmailDayTypeStat>implements EmailDa
 	@Override
 	public Integer getId(String productId, String date, String type) {
 		SQL sql = new SQL();
-		sql.SELECT().PUT_KEY("Id").FROM().TABLE(EmailDayTypeStat.class)
-		.WHERE().LIKE("date", date)
-		.AND().EQ("productId", productId)
-		.AND().EQ("type", type);
+		sql.SELECT().PUT_KEY("Id").FROM().TABLE(EmailDayTypeStat.class).WHERE().LIKE("date", date).AND().EQ("productId", productId).AND().EQ("type", type);
 		Map<String, Object> map = jdbc.executeQueryM(sql.toString());
 
 		if (map == null) {
@@ -36,9 +33,15 @@ public class EmailDayTypeStatDao extends Dao<EmailDayTypeStat>implements EmailDa
 		Integer id = (Integer) map.get("id");
 		return id;
 	}
+
 	@Override
-	public List<Map<String, Object>> getTypeStat(String productId, String startDate,String endDate) {
-		String sql = "SELECT SUM(NUMBER) AS NUMBER ,TYPE FROM EMAIL_DAY_TYPE_STAT WHERE PRODUCT_ID = '"+productId+"' AND DATE(DATE) BETWEEN '"+startDate+"' AND '"+endDate+"' GROUP BY TYPE";
+	public List<Map<String, Object>> getTypeStat(String productId, String startDate, String endDate) {
+		String sql = "";
+		if (productId == null || "".equals(productId)) {
+			sql = "SELECT SUM(NUMBER) AS NUMBER ,TYPE FROM EMAIL_DAY_TYPE_STAT WHERE DATE(DATE) BETWEEN '" + startDate + "' AND '" + endDate + "' GROUP BY TYPE";
+		} else {
+			sql = "SELECT SUM(NUMBER) AS NUMBER ,TYPE FROM EMAIL_DAY_TYPE_STAT WHERE PRODUCT_ID = '" + productId + "' AND DATE(DATE) BETWEEN '" + startDate + "' AND '" + endDate + "' GROUP BY TYPE";
+		}
 		return jdbc.executeQueryL(sql);
 	}
 }

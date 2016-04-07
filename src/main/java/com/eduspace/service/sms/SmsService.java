@@ -61,7 +61,7 @@ public class SmsService {
     		return map;
     	}
     	
-    	map.put("dayTypeStats",smsDayTypeStatDao.getSmsTypeStat(productId, startDay, today));
+    	map.put("typeStat",smsDayTypeStatDao.getSmsTypeStat(productId, startDay, today));
 		map.put("scopeData",CommonDao.getScopeStat(new Jdbc(), productId, type, SmsLog.class, SmsDayStat.class, SmsMonthStat.class));
 		return map;
     }

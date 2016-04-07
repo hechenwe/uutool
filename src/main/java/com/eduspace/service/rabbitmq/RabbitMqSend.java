@@ -31,12 +31,8 @@ public class RabbitMqSend {
 		 String username = pu.getString("username");
 		 String password = pu.getString("password");
 		 //factory.setHost("localhost");
-         factory.setHost(host);  
-         factory.setPort(port);
-         factory.setUsername(username);
-         factory.setPassword(password);
-         factory.setVirtualHost("/tool");
-        
+         factory.setHost(host);factory.setPort(port);factory.setUsername(username);factory.setPassword(password);factory.setVirtualHost("/tool");  
+          
         //创建一个连接  
         Connection connection;
 		try {

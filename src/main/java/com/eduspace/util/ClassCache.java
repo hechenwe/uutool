@@ -24,17 +24,17 @@ public class ClassCache {
 	static {
 		classCache = new ArrayList<>();
 		interfacCache = new HashMap<>();
-		root = getSrc();
+		root = new ClassCache().getClasses();
 		findClass(classCache, root);
 	}
 
-	public static String getSrc() {
-		String webRoot = System.getProperty("uutool.root");
-		String classesPath = webRoot+"WEB-INF" + File.separatorChar + "classes";
-		logger.info("【classes 目录】："+classesPath);
-		return classesPath;
-	}
-
+	private String getClasses() {
+		   String path = this.getClass().getResource("/").getPath();
+		   File file = new File(path);
+		   String classesPath = file.toString()+File.separatorChar;
+		   return classesPath;
+		  
+		}
 	/**
 	 * 递归查找类
 	 * 

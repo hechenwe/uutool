@@ -1,4 +1,7 @@
 package com.eduspace.util;
+
+import java.io.File;
+
 /**
  * 工程路径 工具类
  * @author pc
@@ -6,21 +9,16 @@ package com.eduspace.util;
  */
 public class PathUtil {
  
-    /**
-     * 获取src路径
-     * @return
-     */
 	public static String getSrc() {
-		String src = Thread.currentThread().getContextClassLoader().getResource("/").getPath() + "";
-		return src;
+		 String src = new PathUtil().getClasses();
+		 return src;
 	}
-    /**
-     * 获取webroot路径
-     * @return
-     */
-	public static String getWebRoot() {
-		String webRoot = System.getProperty("tool.root");
-		return webRoot;
-	}
+	private String getClasses() {
+		   String path = this.getClass().getResource("/").getPath();
+		   File file = new File(path);
+		   String classesPath = file.toString()+File.separatorChar;
+		   return classesPath;
+		  
+		}
 
 }

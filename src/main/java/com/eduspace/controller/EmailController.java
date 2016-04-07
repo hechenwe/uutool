@@ -75,15 +75,17 @@ public class EmailController {
 		String subject = ru.getString("subject");
 		String body = ru.getString("body");
 		String sendType = ru.getString("sendType");
+		UnResponse unResponse = new UnResponse();
 
 		String remoteAddr = request.getRemoteAddr();
 		// oauth 认证
 		OauthResponse oauthResponse = OauthUtil.oauth(openId, password, phone, sendType, remoteAddr);
-
+		if (oauthResponse==null) {
+			return unResponse;
+		}
 		// 请求状态码
 		String responseCode = oauthResponse.getResponseCode();
 
-		UnResponse unResponse = new UnResponse();
 		unResponse.setRequestId(requestId);
 		unResponse = ResponseCache.getCache().get(responseCode);
 		// 认证失败
@@ -133,19 +135,11 @@ public class EmailController {
 			emailStatMap = emailLogService.emailStatDao.getTotal();
 		}
 
-		EmailDayTypeStat edts = new EmailDayTypeStat();
-
-		edts.setProductId(productId);
-		edts.setDate(new Date());
-		String today = String2Date.getString(new Date(), "yyyy-MM-dd");
-		List<EmailDayTypeStat> edtss = emailLogService.emailDayTypeStatDao.startGets(edts).like("date", today).endGets();
-		List<Map<String, Object>> emailDayTypeStatList = Ent2Map.getList(edtss, "NEED", "number", "type");
-		List<Map<String, Object>> list = CommonDao.getScopeStat(new Jdbc(), productId, "today", EmailLog.class, EmailDayTypeStat.class, EmailMonthStat.class);
-
+		 
 		Map<String, Object> map = new HashMap<>();
 		map.put("main", emailStatMap);
-		map.put("typeStat", emailDayTypeStatList);
-		map.put("scopeData", list);
+		map.putAll(emailLogService.getDetail(productId, "today"));
+		 
 
 		return map;
 	}
