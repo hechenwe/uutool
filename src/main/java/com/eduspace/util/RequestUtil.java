@@ -1,12 +1,15 @@
 package com.eduspace.util;
 
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Request获取参数的工具类
@@ -42,7 +45,9 @@ public class RequestUtil {
 
 	/**
 	 * 获取 request中的实体模型 对象
-	 * @param entityClass 实体模型的类型 
+	 * 
+	 * @param entityClass
+	 *            实体模型的类型
 	 * @return 模型对象
 	 */
 	public Object getEntity(Class<?> entityClass) {
@@ -51,12 +56,15 @@ public class RequestUtil {
 			Object object = entityClass.newInstance();
 			Field[] fields = entityClass.getDeclaredFields();
 			for (Field field : fields) {
-				Object value = request.getParameter(field.getName());
+				String type = field.getType().getSimpleName();
+				String key = field.getName();
+				Object value = switchData(type, key);
+
 				if (value == null) {
 					continue;
 				}
-				PropertyDescriptor pd = new PropertyDescriptor(field.getName(), entityClass);
-				// 获得set方法
+
+				PropertyDescriptor pd = new PropertyDescriptor(key, entityClass);
 				Method method = pd.getWriteMethod();
 				method.invoke(object, value);
 			}
@@ -232,4 +240,57 @@ public class RequestUtil {
 		return parameter;
 	}
 
+	private Object switchData(String type, String key) {
+
+		Object obj = new Object();
+		switch (type) {
+		case "Integer":
+			obj = getInt(key);
+			break;
+		case "Long":
+			obj = getLong(key);
+			break;
+		case "Short":
+			obj = getShort(key);
+			break;
+		case "Boolean":
+			obj = getBoolean(key);
+			break;
+		case "Float":
+			obj = getFloat(key);
+			break;
+		case "Double":
+			obj = getDouble(key);
+			break;
+		case "Byte":
+			obj = getByte(key);
+			break;
+		case "Date":
+			obj = getDate(key, "yyyy-MM-dd hh:mm:ss");
+			break;
+		default:
+			obj = getString(key);
+		}
+		return obj;
+	}
+	/**
+	 * 将json字符串写入response输入流中
+	 * 
+	 * @param jsonString
+	 * @param response
+	 */
+	public static void printWriterJson(String jsonString, HttpServletResponse response) {
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json; charset=utf-8");
+		PrintWriter printWriter = null;
+		try {
+			printWriter = response.getWriter();
+			printWriter.append(jsonString);
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		} finally {
+			printWriter.close();
+		}
+	}
 }

@@ -28,11 +28,11 @@ public class JpushDo implements Do {
 		logger.info("【推送消息文本】："+message);
 		JpushLog log = new JpushLog();
 		log = new  JsonUtil<JpushLog>().getObject(message, JpushLog.class);
-		log.setSendDate(String2Date.getString(new Date()) );
-		log.setLogDate(String2Date.getString(new Date()) );
+		log.setSendDate(new Date());
+		log.setLogDate(new Date() );
 		try {
 			 
-			JPushService.sendpush(log.getAppKey (), log.getSercet(), log.getType(), log.getObject(), log.getTitle(),log.getContent()); 
+			JPushService.sendpush(log.getAppKey (), log.getSercet(), log.getType(), log.getObject(), log.getTitle(),log.getContent(),log.getExtraContent()); 
 			log.setMessageState("1");
 			
 		} catch (Exception e) {

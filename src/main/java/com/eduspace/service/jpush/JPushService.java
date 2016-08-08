@@ -1,9 +1,5 @@
 package com.eduspace.service.jpush;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import cn.jpush.api.JPushClient;
 import cn.jpush.api.push.model.Message;
 import cn.jpush.api.push.model.Options;
@@ -15,6 +11,10 @@ import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 public class JPushService {
 
 	public static void main(String[] args) {
@@ -25,7 +25,7 @@ public class JPushService {
 		map.put("id", "38");
 		map.put("testtype", "");
 
-		sendpush("ec86eb0e8ada5b85082cd163", "163e261df7d83816273eacc6","TAG","13681004142", "亿家教", "下单成功！");
+		sendpush("c175dffbff40387521efdc13", "341a6c5117eaae87030c0a2c","ALIAS","a2235c798bae43909655dc8dc9863099", "好学生", "下单成功！","这是个测试");
 
 		// JPushClient jpush = new JPushClient("163e261df7d83816273eacc6 ",
 		// "ec86eb0e8ada5b85082cd163");
@@ -58,19 +58,20 @@ public class JPushService {
 	  * @param title 标题
 	  * @param content 正文
 	  */
-	public static void sendpush(String appKey, String sercet, String type, String object, String title, String content) {
-		String msg_content = "";
+	public static void sendpush(String appKey, String sercet, String type, String object, String title, String content,String extras) {
+
 		Map<String, String> map = new HashMap<>();
 		JPushClient jpush = new JPushClient(sercet, appKey, 1);
 		Builder builder = PushPayload.newBuilder();
+		map.put("from", "JPush");
 		map.put("time", "" + new Date().getTime());
+		map.put("content", extras);
 		Platform platform = Platform.android_ios();
 		AndroidNotification androidNotification = AndroidNotification.newBuilder().setTitle(title).addExtras(map).build();
-		IosNotification iosNotification = IosNotification.newBuilder().incrBadge(1).addExtras(map).build();
-		Message message = Message.newBuilder().setMsgContent(msg_content).addExtras(map).build();
+		IosNotification iosNotification = IosNotification.newBuilder().incrBadge(1).setContentAvailable(true).addExtras(map).build();
+		Message message = Message.newBuilder().setMsgContent(content).addExtras(map).build();
 		Options options = Options.newBuilder().setTimeToLive(86400 * 10).setApnsProduction(false).build();
 		Notification notification = Notification.newBuilder().setAlert(content).addPlatformNotification(androidNotification).addPlatformNotification(iosNotification).build();
-
 		builder.setPlatform(platform);
 		builder.setMessage(message);
 		builder.setNotification(notification);
@@ -80,7 +81,9 @@ public class JPushService {
 
 		} else if (type.equals("TAG")) {
 			builder.setAudience(Audience.tag(object));
-		}
+		}else if(type.equals("ALL")){
+            builder.setAudience(Audience.all());
+        }
 		 
 		try {
 			jpush.sendPush(builder.build());

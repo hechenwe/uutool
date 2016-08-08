@@ -95,7 +95,7 @@ public class EmailController {
 
 		EmailLog emailLog = new EmailLog();
 		emailLog.setOpenId(openId);
-		emailLog.setRequestDate(String2Date.getString(new Date()));
+		emailLog.setRequestDate(new Date());
 		emailLog.setBody(body);
 		emailLog.setEmail(email);
 		emailLog.setSubject(subject);

@@ -14,7 +14,7 @@ public class ResponseCache {
 
 	static {
 		
-		PropertiesUtil pu = new PropertiesUtil(PathUtil.getSrc()+"response.properties");
+		PropertiesUtil pu = new PropertiesUtil(PathUtil.getClassPath()+"response.properties");
 		Map<String,String> map = pu.getKeyAndValue();
         for (Map.Entry<String, String> entry : map.entrySet()) {
         	 String code = entry.getKey();

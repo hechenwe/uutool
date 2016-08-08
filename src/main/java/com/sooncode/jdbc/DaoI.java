@@ -117,7 +117,7 @@ public interface DaoI<T> {
 	 * @param object
 	 * @return 保存数量
 	 */
-	public void save(List<Object> objs) ;
+	public void saves(List<?> objs) ;
 	
 	
 	/**

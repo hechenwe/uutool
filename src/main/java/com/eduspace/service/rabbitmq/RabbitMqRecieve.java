@@ -29,7 +29,7 @@ public class RabbitMqRecieve extends Thread {
 	
 	public void run() {
 		
-		 PropertiesUtil pu = new PropertiesUtil(PathUtil.getSrc()+"rabbitMQ.properties");
+		 PropertiesUtil pu = new PropertiesUtil(PathUtil.getClassPath()+"rabbitMQ.properties");
 		 String host = pu.getString("host");
 		 Integer port = pu.getInt("port");
 		 String username = pu.getString("username");

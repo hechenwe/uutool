@@ -107,8 +107,8 @@ public class Jdbc {
 				return n;
 			}
 		} catch (SQLException e1) {
-			e1.printStackTrace();
-			return null;
+			//e1.printStackTrace();
+			return 0L;
 		} finally {
 			// 关闭resultSet资源
 			if (resultSet != null) {
@@ -152,14 +152,13 @@ public class Jdbc {
 		 Connection connection = getConnection(); 
 		 try {
 			connection.setAutoCommit(false);
-			PreparedStatement preparedStatement = null;
+			java.sql.Statement  statement =  connection.createStatement(); 
 			for (String sql : sqls) { 
-				preparedStatement = connection.prepareStatement(sql); 
-				preparedStatement.addBatch(); 
+				statement.addBatch(sql); 
 			} 
-			preparedStatement.executeBatch();    //执行批处理 
+			statement.executeBatch();    //执行批处理 
 			connection.commit(); 
-			preparedStatement.close(); 
+			statement.close(); 
 			connection.close();
 		} catch ( Exception e) {
 			e.printStackTrace();

@@ -29,7 +29,7 @@ public class EmailService {
      */
     public static void sendEmail(String email, String subject, String body) throws UnsupportedEncodingException {
         try {
-        	PropertiesUtil pu = new PropertiesUtil(PathUtil.getSrc()+"email.properties");
+        	PropertiesUtil pu = new PropertiesUtil(PathUtil.getClassPath()+"email.properties");
         	
         	String server = pu.getString("server");
         	String port = pu.getString("port");

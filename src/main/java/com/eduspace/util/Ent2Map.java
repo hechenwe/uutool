@@ -29,7 +29,10 @@ public class Ent2Map {
 	 * @return
 	 */
 	public static Map<String, Object> getMap(Object entity, String... fields) {
-
+        if(entity == null){
+        	return new HashMap<>();
+        }
+		
 		List<String> fList = Arrays.asList(fields);
 		int size = fields.length;
 
@@ -67,11 +70,11 @@ public class Ent2Map {
 				}
 				return map;
 			} else { // 不符合标准
-				return null;
+				return new HashMap<>();
 			}
 
 		} else {// 不符合标准
-			return null;
+			return new HashMap<>();
 		}
 	}
 	/**

@@ -43,9 +43,10 @@ public class ComSQL {
 			if (entry.getValue() == null) {
 				filedString = filedString + "NULL";
 			} else {
-
-				if (entry.getValue().getClass().getName().equals("java.util.Date")) {
-					filedString = filedString + "'" + new SimpleDateFormat("yyyy-MM-dd HH-MM-ss").format(entry.getValue()) + "'";
+				String className = entry.getValue().getClass().getName();
+				 
+				if (entry.getValue().getClass().getName().equals("java.util.Date")||entry.getValue().getClass().getName().equals("java.sql.Timestamp")) {
+					filedString = filedString + "'" + new SimpleDateFormat("yyyy-MM-dd HH:MM:ss").format(entry.getValue()) + "'";
 				} else {
 					filedString = filedString + "'" + entry.getValue() + "'";
 				}
@@ -58,7 +59,7 @@ public class ComSQL {
 				filedString += ")";
 			}
 			n++;
-
+		 
 		}
 		String sqlString = "INSERT INTO " + tableName + columnString + " VALUES " + filedString;
 		logger.info("【可执行SQL】: " + sqlString);

@@ -1,5 +1,7 @@
 package com.eduspace.entity.email;
 
+import java.util.Date;
+
 /**
  * 郵件日志
  * 
@@ -35,13 +37,13 @@ public class EmailLog {
 	private String userId;
 
 	/** 请求时间 */
-	private String requestDate;
+	private Date requestDate;
 
 	/** 短信发送时间 */
-	private String sendDate;
+	private Date sendDate;
 
 	/** 日志生成时间 */
-	private String logDate;
+	private Date logDate;
 
 	/** 短信状态 */
 	private String messageState;
@@ -137,28 +139,29 @@ public class EmailLog {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
+ 
 
-	public String getRequestDate() {
+	public Date getRequestDate() {
 		return requestDate;
 	}
 
-	public void setRequestDate(String requestDate) {
+	public void setRequestDate(Date requestDate) {
 		this.requestDate = requestDate;
 	}
 
-	public String getSendDate() {
+	public Date getSendDate() {
 		return sendDate;
 	}
 
-	public void setSendDate(String sendDate) {
+	public void setSendDate(Date sendDate) {
 		this.sendDate = sendDate;
 	}
 
-	public String getLogDate() {
+	public Date getLogDate() {
 		return logDate;
 	}
 
-	public void setLogDate(String logDate) {
+	public void setLogDate(Date logDate) {
 		this.logDate = logDate;
 	}
 

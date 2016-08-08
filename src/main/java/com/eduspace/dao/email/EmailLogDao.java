@@ -14,15 +14,21 @@ import com.eduspace.entity.email.EmailLog;
 import com.eduspace.entity.sms.SmsDayTypeStat;
 import com.eduspace.entity.sms.SmsLog;
 import com.sooncode.jdbc.Dao;
- 
+import com.sooncode.jdbc.Jdbc;
 import com.sooncode.jdbc.sql.SQL;
 @Repository
 public class EmailLogDao extends Dao<EmailLog> implements EmailLogDaoI{
 
+	public EmailLogDao(){
+		super.jdbc = new Jdbc();
+	}
+	public EmailLogDao(String dbKey){
+		super.jdbc = new Jdbc(dbKey);
+	}
 	@Override
 	public List<String> getProductIds(String requestDate, String messageState) {
 		SQL sql = new SQL();
-		sql.SELECT().DISTINCT("productId").FROM().TABLE(EmailLog.class).WHERE().LIKE("requestDate", requestDate).AND().EQ("messageState", messageState);
+		sql.SELECT().DISTINCT("productId").FROM().TABLE(EmailLog.class);//.WHERE().LIKE("requestDate", requestDate).AND().EQ("messageState", messageState);
 		
 		List<Map<String,Object>> oldList = jdbc.executeQueryL(sql.toString());
 		List<String> list = new ArrayList<>();
@@ -61,6 +67,18 @@ public class EmailLogDao extends Dao<EmailLog> implements EmailLogDaoI{
 		sdtss = (List<EmailDayTypeStat>) jdbc.executeQuerys(sql.toString(), EmailDayTypeStat.class);
 		
 		return sdtss;
+	}
+	@Override
+	public Long getSmsSize(String dateString) {
+		String sql = "SELECT COUNT(1) AS NUMBER FROM EMAIL_LOG WHERE REQUEST_DATE LIKE '%"+dateString+"%'";
+	//	logger.info(sql);
+		Map<String ,Object> map = jdbc.executeQueryM(sql);
+		return (Long) map.get("number");
+	}
+	@Override
+	public Long deleteSms(String dateString) {
+		String sql = "DELETE FROM EMAIL_LOG WHERE REQUEST_DATE LIKE '%"+dateString+"%'";
+		return jdbc.executeUpdate(sql);
 	}
 
 

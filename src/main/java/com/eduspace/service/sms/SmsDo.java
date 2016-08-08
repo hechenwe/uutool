@@ -20,7 +20,7 @@ public class SmsDo implements Do {
 		// TODO Auto-generated method stub
 		SmsLog log = new SmsLog();
 		log = new  JsonUtil<SmsLog>().getObject(mqMessage, SmsLog.class);
-		log.setSendDate(String2Date.getString(new Date()) );
+		log.setSendDate(new Date());
 		try{
 		SMSGateway.send(log.getPhone(), log.getMessage());
 		log.setMessageState("1");
@@ -28,7 +28,7 @@ public class SmsDo implements Do {
 			log.setMessageState("0");
 			e.printStackTrace();
 		}finally {
-			log.setLogDate(String2Date.getString(new Date()));
+			log.setLogDate(new Date());
 			new SmsLogDao().save(log);
 			 
 		}

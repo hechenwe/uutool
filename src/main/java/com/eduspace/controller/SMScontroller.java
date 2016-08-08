@@ -22,6 +22,7 @@ import com.eduspace.entity.sms.SmsDayTypeStat;
 import com.eduspace.entity.sms.SmsLog;
 import com.eduspace.entity.sms.SmsMonthStat;
 import com.eduspace.entity.sms.SmsStat;
+import com.eduspace.entity.sms.SmsTemplate;
 import com.eduspace.service.rabbitmq.RabbitMqSend;
 import com.eduspace.service.sms.Code;
 import com.eduspace.service.sms.OauthUtil;
@@ -35,6 +36,7 @@ import com.eduspace.util.String2Date;
 import com.eduspace.util.UnResponse;
 import com.eeduspace.uuims.api.exception.ApiException;
 import com.sooncode.jdbc.Jdbc;
+import com.sooncode.jdbc.util.Pager;
 
 /**
  * 发送短信
@@ -88,16 +90,16 @@ public class SMScontroller {
 
 		// 获取短信内容
 		String code = Code.sixCode();// 短信验证码
-		if (sendType.equals("other")) {// 自定义模板
-			message = Code.getOtherMessage(message, code, oauthResponse.getProductName());
-		} else { // 定制模板
+		//if (sendType.equals("other")) {// 自定义模板
+		//	message = Code.getOtherMessage(message, code, oauthResponse.getProductName());
+		//} else { // 定制模板
 			message = Code.getMessage(sendType, code, oauthResponse.getProductName());
-		}
+		//}
 
 		SmsLog messageLog = new SmsLog();
 		messageLog.setOpenId(openId);
 		messageLog.setSendType(sendType);
-		messageLog.setRequestDate(String2Date.getString(new Date()));
+		messageLog.setRequestDate(new Date());
 		messageLog.setMessage(message);
 		messageLog.setPhone(phone);
 		messageLog.setProductId(oauthResponse.getProductId());
@@ -136,7 +138,11 @@ public class SMScontroller {
 			SmsStat ss = new SmsStat();
 			ss.setProductId(productId);
 			ss = smsServic.smsStatDao.get(ss);
-	        smsStatMap = Ent2Map.getMap(ss,"NOT_NEED", "productId","statId");
+			if(ss!=null){
+				smsStatMap = Ent2Map.getMap(ss,"NOT_NEED", "productId","statId");
+			}else{
+				smsStatMap = new HashMap<>();
+			}
 		}
 		 
 		Map<String, Object> map = new HashMap<>();
@@ -160,4 +166,87 @@ public class SMScontroller {
 		map = smsServic.getDetail(productId, type) ;
 		return map;
 	}
+	
+	
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/getAllSmsTemplate", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> getAllSmsTemplate(HttpServletRequest request){
+		RequestUtil ru = new RequestUtil(request);
+		Long pageNum = ru.getLong("pageNum");
+		Long pageSize = ru.getLong("pageSize");
+		SmsTemplate smsT = (SmsTemplate) ru.getEntity(SmsTemplate.class) ;
+		Map <String,Object> map = new HashMap<>();
+		Pager<SmsTemplate> pager = smsServic.smsTemplateDao.getPager(pageNum, pageSize, smsT);
+		map.put("pager",pager);
+		return map;
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/updateSmsTemplate", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> updateSmsTemplate(HttpServletRequest request){
+		RequestUtil ru = new RequestUtil(request);
+		SmsTemplate smsT = (SmsTemplate) ru.getEntity(SmsTemplate.class) ;
+		Map <String,Object> map = new HashMap<>();
+		if(smsT.getId()== null){
+			map.put("update","failed" );
+			return map;
+		}
+		Long n = smsServic.smsTemplateDao.update(smsT);
+		if (n == 1L){
+			map.put("update","success" );
+		}else{
+			map.put("update","failed" );
+		}
+		return map;
+	}
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/addSmsTemplate", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> addSmsTemplate(HttpServletRequest request){
+		RequestUtil ru = new RequestUtil(request);
+		SmsTemplate smsT = (SmsTemplate) ru.getEntity(SmsTemplate.class) ;//smsKey 和 smsValue 
+		Map <String,Object> map = new HashMap<>();
+		Long n = smsServic.smsTemplateDao.save(smsT);
+		if (n > 0){
+			map.put("add","success" );
+		}else{
+			map.put("add","failed" );
+		}
+		return map;
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/deleteSmsTemplate", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> deleteSmsTemplate(HttpServletRequest request){
+		RequestUtil ru = new RequestUtil(request);
+		SmsTemplate smsT = (SmsTemplate) ru.getEntity(SmsTemplate.class) ;//id 
+		Map <String,Object> map = new HashMap<>();
+		int n = smsServic.smsTemplateDao.delete(smsT);
+		if (n == 1){
+			map.put("delete","success" );
+		}else{
+			map.put("delete","failed" );
+		}
+		return map;
+	}
+	
 }

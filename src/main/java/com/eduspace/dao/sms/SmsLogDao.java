@@ -1,27 +1,34 @@
 package com.eduspace.dao.sms;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+ 
+ 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+ 
 
 import org.springframework.stereotype.Repository;
 import com.eduspace.dao.sms.interfac.SmsLogDaoI;
 import com.eduspace.entity.sms.SmsDayTypeStat;
 import com.eduspace.entity.sms.SmsLog;
-import com.eduspace.util.CalendarUtil;
+ 
 import com.sooncode.jdbc.Dao;
+import com.sooncode.jdbc.Jdbc;
 import com.sooncode.jdbc.sql.SQL;
 
 @Repository
 public class SmsLogDao extends Dao<SmsLog>implements SmsLogDaoI {
 
+	public SmsLogDao(){
+		super.jdbc = new Jdbc();
+	}
+	public SmsLogDao(String dbKey){
+		super.jdbc = new Jdbc(dbKey);
+	}
 	@Override
 	public List<String> getProductIds(String requestDate, String messageState) {
 		SQL sql = new SQL();
-		sql.SELECT().DISTINCT("productId").FROM().TABLE(SmsLog.class).WHERE().LIKE("requestDate", requestDate).AND().EQ("messageState", messageState);
+		sql.SELECT().DISTINCT("productId").FROM().TABLE(SmsLog.class);//.WHERE().LIKE("requestDate", requestDate).AND().EQ("messageState", messageState);
 
 		List<Map<String, Object>> oldList = jdbc.executeQueryL(sql.toString());
 		List<String> list = new ArrayList<>();
@@ -51,6 +58,18 @@ public class SmsLogDao extends Dao<SmsLog>implements SmsLogDaoI {
 		List<SmsDayTypeStat> sdtss = new ArrayList<>();
 		sdtss = (List<SmsDayTypeStat>) jdbc.executeQuerys(sql.toString(), SmsDayTypeStat.class);
 		return sdtss;
+	}
+	@Override
+	public Long getSmsSize(String dateString) {
+		String sql = "SELECT COUNT(1) AS NUMBER FROM SMS_LOG WHERE REQUEST_DATE LIKE '%"+dateString+"%'";
+	//	logger.info(sql);
+		Map<String ,Object> map = jdbc.executeQueryM(sql);
+		return (Long) map.get("number");
+	}
+	@Override
+	public Long deleteSms(String dateString) {
+		String sql = "DELETE FROM SMS_LOG WHERE REQUEST_DATE LIKE '%"+dateString+"%'";
+		return jdbc.executeUpdate(sql);
 	}
 
  

@@ -31,6 +31,16 @@ public interface SmsLogDaoI extends DaoI<SmsLog> {
 	 * @return 把 短信类别  和短信数量 封装在 SmsDayTypeStat 内
 	 */
 	public List<SmsDayTypeStat> getTypeOfNumber(String productId, String requestDate);
-		
+	
+	/**
+	 * 获取某日 短信日志条数 
+	 */
+	public Long getSmsSize(String dateString) ;
+	
+	
+	/**
+	 * 删除某日 短信日志条数 
+	 */
+	public Long deleteSms(String dateString) ;
 	 
 }

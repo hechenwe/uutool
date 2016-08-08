@@ -28,7 +28,7 @@ public class OauthUtil {
      * @return
      */
 	public static OauthResponse oauth(String openId,String password,String phone,String sendType,String remoteAddress){
-		 PropertiesUtil pu = new PropertiesUtil(PathUtil.getSrc()+"oauth.properties");
+		 PropertiesUtil pu = new PropertiesUtil(PathUtil.getClassPath()+"oauth.properties");
          String oauthUrl = pu.getString("oauthUrl"); 
 		// String oauthUrl = "http://192.168.1.13/oauth/";//身份认证url
 		 OauthClient client = new OauthClient(oauthUrl);
@@ -46,6 +46,7 @@ public class OauthUtil {
 			String responseCode = sendSMSResponse.getCode();
 			OauthResponse or = new OauthResponse();
 			or.setResponseCode(responseCode);
+			 
 			// 认证失败
 			if(responseCode.equals("Success")){
 				String productName = messageModel.getProductName();
@@ -59,7 +60,7 @@ public class OauthUtil {
 			return or;
 		} catch (Exception e) {
 			 
-			e.printStackTrace();
+			//e.printStackTrace();
 			return null;
 		}
 	}

@@ -34,5 +34,14 @@ public interface JpushLogDaoI extends DaoI<JpushLog> {
 	 */
 	public List<JpushDayTypeStat> getTypeOfNumber(String productId, String requestDate);
 		
-	 
+	/**
+	 * 获取某日 短信日志条数 
+	 */
+	public Long getSmsSize(String dateString) ;
+	
+	
+	/**
+	 * 删除某日 短信日志条数 
+	 */
+	public Long deleteSms(String dateString) ;
 }

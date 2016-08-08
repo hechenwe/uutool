@@ -26,7 +26,7 @@ public class SMSGateway {
      * @throws Exception 
      */
 	public  static void send(String telephone, String massage) throws Exception {
-		String src = PathUtil.getSrc();
+		String src = PathUtil.getClassPath();
 		PropertiesUtil pu = new PropertiesUtil(src+"smsCode.properties");
         String urlString = pu.getString("url");
         String apikey = pu.getString("apikey");

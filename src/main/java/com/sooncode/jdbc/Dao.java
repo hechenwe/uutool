@@ -88,10 +88,17 @@ public abstract class Dao<T> {
 	public Dao<T> startGets(Object obj) {
 		// 去数据库查询
 		this.sql = ComSQL.select(obj);
-		logger.info("[模糊查询]" + sql);
+		//logger.info("[模糊查询]" + sql);
 		this.obj = obj;
 		return this;// getEntitys(list);
 	}
+//	public Dao<T> startGetSize(Object obj) {
+//		// 去数据库查询
+//		this.sql = ComSQL.select(obj);
+//		logger.info("[模糊查询]" + sql);
+//		this.obj = obj;
+//		return this;// getEntitys(list);
+//	}
 
 	public Dao<T> like(String field) {
 
@@ -116,6 +123,11 @@ public abstract class Dao<T> {
 		this.sql = sql.replace(subSql, like);
 		return this;// getEntitys(list);
 	}
+	public Dao<T> limit(Integer pageNum, Integer pageSize) {
+		 
+		this.sql = sql + " LIMIT "+(pageNum - 1) * pageSize+"," + pageSize;
+		return this;// getEntitys(list);
+	}
 
 	public List<T> endGets() {
 		logger.info("【模糊查询】" + sql);
@@ -125,6 +137,14 @@ public abstract class Dao<T> {
 		return getEntitys(list);
 
 	}
+//	public Long endGetSize() {
+//		logger.info("【模糊查询】" + sql);
+//		 Map<String, Object>  map = jdbc.executeQueryM(sql);
+//		sql = "";
+//		this.obj = null;
+//		return (Long) map.get("size");
+//		
+//	}
 
 	/**
 	 * 分页查询
@@ -456,11 +476,8 @@ public abstract class Dao<T> {
 	 * @param object
 	 * @return 保存数量
 	 */
-	public void save(List<Object> objs) {
-		// 验证obj
-		if (isNull(objs) == false) {
-			return;
-		}
+	public void saves(List<?> objs) {
+		 
 		List<String> sqls = new ArrayList<>();
 		for (Object obj : objs) {
 			String sql = ComSQL.insert(obj).toString();

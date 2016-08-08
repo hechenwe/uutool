@@ -25,7 +25,7 @@ public class RabbitMqSend {
          */  
         ConnectionFactory factory = new ConnectionFactory();  
         //设置MabbitMQ所在主机ip或者主机名  
-         PropertiesUtil pu = new PropertiesUtil(PathUtil.getSrc()+"rabbitMQ.properties");
+         PropertiesUtil pu = new PropertiesUtil(PathUtil.getClassPath()+"rabbitMQ.properties");
          String host = pu.getString("host");
 		 Integer port = pu.getInt("port");
 		 String username = pu.getString("username");

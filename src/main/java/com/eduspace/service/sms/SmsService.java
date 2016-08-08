@@ -13,6 +13,7 @@ import com.eduspace.dao.sms.interfac.SmsDayTypeStatDaoI;
 import com.eduspace.dao.sms.interfac.SmsLogDaoI;
 import com.eduspace.dao.sms.interfac.SmsMonthStatDaoI;
 import com.eduspace.dao.sms.interfac.SmsStatDaoI;
+import com.eduspace.dao.sms.interfac.SmsTemplateDaoI;
 import com.eduspace.entity.sms.SmsDayStat;
 import com.eduspace.entity.sms.SmsDayTypeStat;
 import com.eduspace.entity.sms.SmsLog;
@@ -24,7 +25,7 @@ import com.sooncode.jdbc.Jdbc;
 @Service
 public class SmsService {
 	public SmsDayStatDaoI smsDayStatDao = (SmsDayStatDaoI) ClassCache.getImplementObject(SmsDayStatDaoI.class);
-
+	public SmsTemplateDaoI smsTemplateDao = (SmsTemplateDaoI) ClassCache.getImplementObject(SmsTemplateDaoI.class);
 	public SmsLogDaoI smsLogDao = (SmsLogDaoI) ClassCache.getImplementObject(SmsLogDaoI.class);
 
 	public SmsMonthStatDaoI smsMonthStatDao = (SmsMonthStatDaoI) ClassCache.getImplementObject(SmsMonthStatDaoI.class);

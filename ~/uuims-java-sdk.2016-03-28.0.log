@@ -1,0 +1,10 @@
+2016-03-28 14:22:27,332  INFO     cn.jpush.api.common.NativeHttpClient:  40 - Created instance with _maxRetryTimes = 1
+2016-03-28 14:22:27,498  INFO     cn.jpush.api.common.NativeHttpClient:  40 - Created instance with _maxRetryTimes = 1
+2016-03-28 14:22:32,266  WARN     cn.jpush.api.common.NativeHttpClient: 161 - Got error response - responseCode:400, responseContent:{"msg_id": 2495669766, "error": {"message": "cannot find user by this audience", "code": 1011}}
+2016-03-28 14:22:32,327 ERROR     cn.jpush.api.common.NativeHttpClient: 165 - Your request params is invalid. Please check them according to error message.
+2016-03-28 14:24:14,396  INFO     cn.jpush.api.common.NativeHttpClient:  40 - Created instance with _maxRetryTimes = 1
+2016-03-28 14:24:14,433  INFO     cn.jpush.api.common.NativeHttpClient:  40 - Created instance with _maxRetryTimes = 1
+2016-03-28 14:25:20,675  INFO     cn.jpush.api.common.NativeHttpClient:  40 - Created instance with _maxRetryTimes = 1
+2016-03-28 14:25:20,714  INFO     cn.jpush.api.common.NativeHttpClient:  40 - Created instance with _maxRetryTimes = 1
+2016-03-28 14:28:21,149  INFO     cn.jpush.api.common.NativeHttpClient:  40 - Created instance with _maxRetryTimes = 1
+2016-03-28 14:28:21,185  INFO     cn.jpush.api.common.NativeHttpClient:  40 - Created instance with _maxRetryTimes = 1

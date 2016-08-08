@@ -1,5 +1,7 @@
 package com.eduspace.entity.jpush;
 
+import java.util.Date;
+
 /**
  * 推送日志
  * 
@@ -27,6 +29,11 @@ public class JpushLog {
 	 */
 	private String content;
 	
+	  /**
+     * 附加内容
+     */
+    private String extraContent;
+	
 	private String sercet;
 	private String appKey;
 
@@ -49,13 +56,13 @@ public class JpushLog {
 	private String userId;
 
 	/** 请求时间 */
-	private String requestDate;
+	private Date requestDate;
 
 	/** 短信发送时间 */
-	private String sendDate;
+	private Date sendDate;
 
 	/** 日志生成时间 */
-	private String logDate;
+	private Date logDate;
 
 	/**状态 */
 	private String messageState;
@@ -128,27 +135,28 @@ public class JpushLog {
 		this.userId = userId;
 	}
 
-	public String getRequestDate() {
+	 
+	public Date getRequestDate() {
 		return requestDate;
 	}
 
-	public void setRequestDate(String requestDate) {
+	public void setRequestDate(Date requestDate) {
 		this.requestDate = requestDate;
 	}
 
-	public String getSendDate() {
+	public Date getSendDate() {
 		return sendDate;
 	}
 
-	public void setSendDate(String sendDate) {
+	public void setSendDate(Date sendDate) {
 		this.sendDate = sendDate;
 	}
 
-	public String getLogDate() {
+	public Date getLogDate() {
 		return logDate;
 	}
 
-	public void setLogDate(String logDate) {
+	public void setLogDate(Date logDate) {
 		this.logDate = logDate;
 	}
 
@@ -238,6 +246,14 @@ public class JpushLog {
 
 	public void setMsgContent(String msgContent) {
 		this.msgContent = msgContent;
+	}
+
+	public String getExtraContent() {
+		return extraContent;
+	}
+
+	public void setExtraContent(String extraContent) {
+		this.extraContent = extraContent;
 	}
 
 	 

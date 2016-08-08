@@ -2,8 +2,9 @@ package com.eduspace.service.sms;
 
 import java.util.Random;
 
-import com.eduspace.util.PathUtil;
-import com.eduspace.util.PropertiesUtil;
+import com.eduspace.dao.sms.interfac.SmsTemplateDaoI;
+import com.eduspace.entity.sms.SmsTemplate;
+import com.eduspace.util.ClassCache;
 
 /**
  * 验证码
@@ -12,12 +13,16 @@ import com.eduspace.util.PropertiesUtil;
  *
  */
 public class Code {
+	public static  SmsTemplateDaoI smsTemplateDao = (SmsTemplateDaoI) ClassCache.getImplementObject(SmsTemplateDaoI.class);
 
 	public static String getMessage(String sendType, String code, String productName) {
 
-		String src = PathUtil.getSrc();
-		PropertiesUtil pu = new PropertiesUtil(src + "smsCode.properties");
-		String message = pu.getString(sendType);
+		//String src = PathUtil.getSrc();
+		//PropertiesUtil pu = new PropertiesUtil(src + "smsCode.properties");
+		SmsTemplate st = new SmsTemplate();
+		st.setSmsKey(sendType);
+		st = smsTemplateDao.get(st);
+		String message = st.getSmsValue();
 
 		if (message != null) {
 			message = message.replace("${code}", code);

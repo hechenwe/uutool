@@ -67,7 +67,7 @@ public class JpushController {
 		// String requestId = ru.getString("requestId");
 
 		JpushLog log = (JpushLog) ru.getEntity(JpushLog.class);
-		log.setRequestDate(String2Date.getString(new Date()));
+		log.setRequestDate(new Date());
 		String remoteAddr = request.getRemoteAddr();
 		// oauth 认证
 		OauthResponse oauthResponse = OauthUtil.oauth(openId, password, phone, "jpush", remoteAddr);
@@ -106,7 +106,11 @@ public class JpushController {
 
 			es.setProductId(productId);
 			es = jpushLogService.jpushStatDao.get(es);
-			jpushStatMap = Ent2Map.getMap(es, "NOT_NEED", "statId", "productId");
+			if(es !=null){
+				jpushStatMap = Ent2Map.getMap(es, "NOT_NEED", "statId", "productId");
+			}else{
+				jpushStatMap = new HashMap<>();
+			}
 		}
 
 
